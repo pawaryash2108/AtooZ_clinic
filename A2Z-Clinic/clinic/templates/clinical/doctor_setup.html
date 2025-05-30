@@ -1,0 +1,111 @@
+{% extends 'clinical/base.html' %}
+
+{% block title %}Doctor Setup - A2Z Clinic{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Doctor Setup</h1>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Create Doctor Account</h6>
+        </div>
+        <div class="card-body">
+            <p class="mb-4">This will create the main doctor account for the clinic. Only one doctor account is allowed in the system.</p>
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="mb-3">Login Information</h5>
+                        
+                        <div class="mb-3">
+                            <label for="{{ user_form.username.id_for_label }}" class="form-label">Username</label>
+                            {{ user_form.username }}
+                            {% if user_form.username.errors %}
+                            <div class="text-danger mt-1 small">{{ user_form.username.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ user_form.email.id_for_label }}" class="form-label">Email</label>
+                            {{ user_form.email }}
+                            {% if user_form.email.errors %}
+                            <div class="text-danger mt-1 small">{{ user_form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ user_form.password1.id_for_label }}" class="form-label">Password</label>
+                            {{ user_form.password1 }}
+                            {% if user_form.password1.errors %}
+                            <div class="text-danger mt-1 small">{{ user_form.password1.errors }}</div>
+                            {% endif %}
+                            <div class="text-muted small mt-1">{{ user_form.password1.help_text }}</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ user_form.password2.id_for_label }}" class="form-label">Confirm Password</label>
+                            {{ user_form.password2 }}
+                            {% if user_form.password2.errors %}
+                            <div class="text-danger mt-1 small">{{ user_form.password2.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <h5 class="mb-3">Doctor Information</h5>
+                        
+                        <div class="mb-3">
+                            <label for="{{ doctor_form.full_name.id_for_label }}" class="form-label">Full Name</label>
+                            {{ doctor_form.full_name }}
+                            {% if doctor_form.full_name.errors %}
+                            <div class="text-danger mt-1 small">{{ doctor_form.full_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ doctor_form.specialization.id_for_label }}" class="form-label">Specialization</label>
+                            {{ doctor_form.specialization }}
+                            {% if doctor_form.specialization.errors %}
+                            <div class="text-danger mt-1 small">{{ doctor_form.specialization.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ doctor_form.license_number.id_for_label }}" class="form-label">License Number</label>
+                            {{ doctor_form.license_number }}
+                            {% if doctor_form.license_number.errors %}
+                            <div class="text-danger mt-1 small">{{ doctor_form.license_number.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ doctor_form.phone_number.id_for_label }}" class="form-label">Phone Number</label>
+                            {{ doctor_form.phone_number }}
+                            {% if doctor_form.phone_number.errors %}
+                            <div class="text-danger mt-1 small">{{ doctor_form.phone_number.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ doctor_form.profile_picture.id_for_label }}" class="form-label">Profile Picture</label>
+                            {{ doctor_form.profile_picture }}
+                            {% if doctor_form.profile_picture.errors %}
+                            <div class="text-danger mt-1 small">{{ doctor_form.profile_picture.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg">Create Doctor Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

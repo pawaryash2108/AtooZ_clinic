@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}Testimonials - A2Z Clinic{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1 class="fw-bold">Patient Testimonials</h1>
+                <p class="lead">What our patients say about us</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Video Testimonial -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="fw-bold mb-4">Featured Patient Testimonial</h2>
+                <div class="ratio ratio-16x9 mb-4">
+                    {% load static %}
+                    <video controls class="rounded shadow">
+                        <source src="{% static 'testimonial_video.mp4' %}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+                <p class="lead">Hear directly from our patients about their experience at A2Z Clinic.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5">
+    <div class="container">
+        {% if testimonials %}
+            <div class="row">
+                {% for testimonial in testimonials %}
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="testimonial-card h-100">
+                        <div class="d-flex align-items-center mb-3">
+                            {% if testimonial.picture %}
+                                <img src="{{ testimonial.picture.url }}" alt="{{ testimonial.name }}" class="me-3">
+                            {% else %}
+                                <img src="https://via.placeholder.com/70?text=P" alt="{{ testimonial.name }}" class="me-3">
+                            {% endif %}
+                            <div>
+                                <h5 class="mb-0">{{ testimonial.name }}</h5>
+                                <small class="text-muted">Patient</small>
+                            </div>
+                        </div>
+                        <p>{{ testimonial.testimonial }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="row">
+                <div class="col-12 text-center py-5">
+                    <p class="lead">We are currently collecting testimonials from our patients. Check back soon!</p>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Share Your Experience Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto text-center">
+                <h2 class="fw-bold mb-4">Had a Great Experience?</h2>
+                <p class="lead mb-4">We'd love to hear about your experience at our clinic. Your feedback helps us improve our services.</p>
+                <a href="{% url 'public:contact' %}" class="btn btn-primary btn-lg">Share Your Feedback</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

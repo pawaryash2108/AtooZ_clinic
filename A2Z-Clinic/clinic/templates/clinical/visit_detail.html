@@ -1,0 +1,215 @@
+{% extends 'clinical/base.html' %}
+
+{% block title %}Visit Details - A2Z Clinic{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Visit Details</h1>
+        <div>
+            <a href="{% url 'clinical:patient_detail' pk=visit.patient.pk %}" class="btn btn-sm btn-primary">
+                <i class="fas fa-arrow-left"></i> Back to Patient
+            </a>
+            <a href="{% url 'clinical:visit_delete' pk=visit.pk %}" class="btn btn-sm btn-danger">
+                <i class="fas fa-trash"></i> Delete Visit
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Visit Information</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h5 class="mb-1">Patient</h5>
+                        <p>{{ visit.patient.name }}</p>
+                    </div>
+                    <div class="mb-3">
+                        <h5 class="mb-1">Visit Date</h5>
+                        <p>{{ visit.visit_date|date:"F j, Y, g:i a" }}</p>
+                    </div>
+                    {% if visit.follow_up_date %}
+                    <div class="mb-3">
+                        <h5 class="mb-1">Follow-up Date</h5>
+                        <p>{{ visit.follow_up_date|date:"F j, Y" }}</p>
+                    </div>
+                    {% endif %}
+                    <div class="mb-0">
+                        <h5 class="mb-1">Vital Signs</h5>
+                        <ul class="list-group list-group-flush">
+                            {% if visit.blood_pressure %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Blood Pressure
+                                <span class="badge bg-primary rounded-pill">{{ visit.blood_pressure }}</span>
+                            </li>
+                            {% endif %}
+                            {% if visit.temperature %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Temperature
+                                <span class="badge bg-primary rounded-pill">{{ visit.temperature }} °C</span>
+                            </li>
+                            {% endif %}
+                            {% if visit.weight %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Weight
+                                <span class="badge bg-primary rounded-pill">{{ visit.weight }} kg</span>
+                            </li>
+                            {% endif %}
+                            {% if visit.height %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Height
+                                <span class="badge bg-primary rounded-pill">{{ visit.height }} cm</span>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Edit Visit</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.visit_date.id_for_label }}" class="form-label">Visit Date</label>
+                            {{ form.visit_date }}
+                            {% if form.visit_date.errors %}
+                            <div class="text-danger mt-1 small">{{ form.visit_date.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.symptoms.id_for_label }}" class="form-label">Symptoms</label>
+                                {{ form.symptoms }}
+                                {% if form.symptoms.errors %}
+                                <div class="text-danger mt-1 small">{{ form.symptoms.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.diagnosis.id_for_label }}" class="form-label">Diagnosis</label>
+                                {{ form.diagnosis }}
+                                {% if form.diagnosis.errors %}
+                                <div class="text-danger mt-1 small">{{ form.diagnosis.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.prescribed_medicines.id_for_label }}" class="form-label">Prescribed Medicines</label>
+                            {{ form.prescribed_medicines }}
+                            {% if form.prescribed_medicines.errors %}
+                            <div class="text-danger mt-1 small">{{ form.prescribed_medicines.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.lab_tests_recommended.id_for_label }}" class="form-label">Lab Tests Recommended</label>
+                            {{ form.lab_tests_recommended }}
+                            {% if form.lab_tests_recommended.errors %}
+                            <div class="text-danger mt-1 small">{{ form.lab_tests_recommended.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.follow_up_date.id_for_label }}" class="form-label">Follow-up Date</label>
+                                {{ form.follow_up_date }}
+                                {% if form.follow_up_date.errors %}
+                                <div class="text-danger mt-1 small">{{ form.follow_up_date.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.blood_pressure.id_for_label }}" class="form-label">Blood Pressure</label>
+                                {{ form.blood_pressure }}
+                                {% if form.blood_pressure.errors %}
+                                <div class="text-danger mt-1 small">{{ form.blood_pressure.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.temperature.id_for_label }}" class="form-label">Temperature (°C)</label>
+                                {{ form.temperature }}
+                                {% if form.temperature.errors %}
+                                <div class="text-danger mt-1 small">{{ form.temperature.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.weight.id_for_label }}" class="form-label">Weight (kg)</label>
+                                {{ form.weight }}
+                                {% if form.weight.errors %}
+                                <div class="text-danger mt-1 small">{{ form.weight.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="{{ form.height.id_for_label }}" class="form-label">Height (cm)</label>
+                                {{ form.height }}
+                                {% if form.height.errors %}
+                                <div class="text-danger mt-1 small">{{ form.height.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.notes.id_for_label }}" class="form-label">Notes</label>
+                            {{ form.notes }}
+                            {% if form.notes.errors %}
+                            <div class="text-danger mt-1 small">{{ form.notes.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
+            
+            {% if visit.documents.exists %}
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Documents</h6>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" width="100%" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Type</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for document in visit.documents.all %}
+                                <tr>
+                                    <td>{{ document.title }}</td>
+                                    <td>{{ document.get_document_type_display }}</td>
+                                    <td>{{ document.uploaded_at|date:"M d, Y" }}</td>
+                                    <td>
+                                        <a href="{{ document.file.url }}" class="btn btn-sm btn-info" target="_blank">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
