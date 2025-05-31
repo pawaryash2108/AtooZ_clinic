@@ -1,0 +1,81 @@
+{% extends 'clinical/base.html' %}
+{% load static %}
+
+{% block title %}Medical Documents - A2Z Clinic{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Medical Documents</h1>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">All Documents</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="documentsTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Type</th>
+                            <th>Patient</th>
+                            <th>Related Visit</th>
+                            <th>Date Uploaded</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for document in documents %}
+                        <tr>
+                            <td>{{ document.title }}</td>
+                            <td>{{ document.get_document_type_display }}</td>
+                            <td>
+                                <a href="{% url 'clinical:patient_detail' pk=document.patient.pk %}">
+                                    {{ document.patient.name }}
+                                </a>
+                            </td>
+                            <td>
+                                {% if document.visit %}
+                                <a href="{% url 'clinical:visit_detail' pk=document.visit.pk %}">
+                                    {{ document.visit.visit_date|date:"M d, Y" }}
+                                </a>
+                                {% else %}
+                                N/A
+                                {% endif %}
+                            </td>
+                            <td>{{ document.uploaded_at|date:"M d, Y" }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% static 'images/medical_documents/' %}{{ document.file.name|split:'/'|last }}" class="btn btn-sm btn-info" target="_blank">
+                                        <i class="fas fa-eye"></i> View
+                                    </a>
+                                    <a href="{% url 'clinical:document_delete' pk=document.pk %}" class="btn btn-sm btn-danger">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No documents found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        $('#documentsTable').DataTable({
+            order: [[4, 'desc']]
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

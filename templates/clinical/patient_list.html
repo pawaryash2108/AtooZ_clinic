@@ -1,0 +1,77 @@
+{% extends 'clinical/base.html' %}
+
+{% block title %}Patients - A2Z Clinic{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'clinical:dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Patients</li>
+    </ol>
+</nav>
+
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Patient List</h6>
+        <a href="{% url 'clinical:patient_add' %}" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> Add New Patient
+        </a>
+    </div>
+    <div class="card-body">
+        <form method="get" class="mb-4">
+            <div class="input-group">
+                {{ form.search }}
+                <button class="btn btn-primary" type="submit">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </div>
+        </form>
+
+        {% if patients %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Mobile</th>
+                        <th>Email</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for patient in patients %}
+                    <tr>
+                        <td>{{ patient.name }}</td>
+                        <td>{{ patient.age }}</td>
+                        <td>{{ patient.get_gender_display }}</td>
+                        <td>{{ patient.mobile }}</td>
+                        <td>{{ patient.email|default:"-" }}</td>
+                        <td>
+                            <a href="{% url 'clinical:patient_detail' pk=patient.pk %}" class="btn btn-sm btn-info">
+                                <i class="fas fa-eye"></i> View
+                            </a>
+                            <a href="{% url 'clinical:patient_edit' pk=patient.pk %}" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a href="{% url 'clinical:patient_delete' pk=patient.pk %}" class="btn btn-sm btn-danger">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <p class="lead">No patients found.</p>
+            <a href="{% url 'clinical:patient_add' %}" class="btn btn-primary">
+                <i class="fas fa-user-plus"></i> Add New Patient
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

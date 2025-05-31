@@ -1,0 +1,150 @@
+{% extends 'clinical/base.html' %}
+{% load static %}
+
+{% block title %}Doctor Profile - A2Z Clinic{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Doctor Profile</h1>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Profile Information</h6>
+                </div>
+                <div class="card-body text-center">
+                    {% if doctor.profile_picture %}
+                        <img src="{% static 'images/doctor_profiles/' %}{{ doctor.profile_picture.name|split:'/'|last }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    {% else %}
+                        <img src="https://via.placeholder.com/150?text=Doctor" class="img-fluid rounded-circle mb-3">
+                    {% endif %}
+                    
+                    <h4 class="mb-0">{{ doctor.full_name }}</h4>
+                    <p class="text-muted mb-1">{{ doctor.specialization }}</p>
+                    
+                    <div class="mt-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>License Number:</strong>
+                            <span>{{ doctor.license_number }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>Phone Number:</strong>
+                            <span>{{ doctor.phone_number }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>Email:</strong>
+                            <span>{{ doctor.user.email }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <strong>Username:</strong>
+                            <span>{{ doctor.user.username }}</span>
+                        </div>
+                        <div class="mt-3">
+                            <a href="{% url 'clinical:change_password' %}" class="btn btn-sm btn-primary">
+                                <i class="fas fa-key"></i> Change Password
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Edit Profile</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <h5 class="mb-3">Personal Information</h5>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.full_name.id_for_label }}" class="form-label">Full Name</label>
+                            {{ form.full_name }}
+                            {% if form.full_name.errors %}
+                            <div class="text-danger mt-1 small">{{ form.full_name.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.specialization.id_for_label }}" class="form-label">Specialization</label>
+                            {{ form.specialization }}
+                            {% if form.specialization.errors %}
+                            <div class="text-danger mt-1 small">{{ form.specialization.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.license_number.id_for_label }}" class="form-label">License Number</label>
+                            {{ form.license_number }}
+                            {% if form.license_number.errors %}
+                            <div class="text-danger mt-1 small">{{ form.license_number.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.phone_number.id_for_label }}" class="form-label">Phone Number</label>
+                            {{ form.phone_number }}
+                            {% if form.phone_number.errors %}
+                            <div class="text-danger mt-1 small">{{ form.phone_number.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.profile_picture.id_for_label }}" class="form-label">Profile Picture</label>
+                            {{ form.profile_picture }}
+                            {% if form.profile_picture.errors %}
+                            <div class="text-danger mt-1 small">{{ form.profile_picture.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <h5 class="mb-3">Account Information</h5>
+                        
+                        <div class="mb-3">
+                            <label for="{{ user_form.username.id_for_label }}" class="form-label">Username</label>
+                            {{ user_form.username }}
+                            {% if user_form.username.errors %}
+                            <div class="text-danger mt-1 small">{{ user_form.username.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ user_form.email.id_for_label }}" class="form-label">Email</label>
+                            {{ user_form.email }}
+                            {% if user_form.email.errors %}
+                            <div class="text-danger mt-1 small">{{ user_form.email.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ user_form.first_name.id_for_label }}" class="form-label">First Name</label>
+                                {{ user_form.first_name }}
+                                {% if user_form.first_name.errors %}
+                                <div class="text-danger mt-1 small">{{ user_form.first_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ user_form.last_name.id_for_label }}" class="form-label">Last Name</label>
+                                {{ user_form.last_name }}
+                                {% if user_form.last_name.errors %}
+                                <div class="text-danger mt-1 small">{{ user_form.last_name.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

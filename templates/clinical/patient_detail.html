@@ -1,0 +1,479 @@
+{% extends 'clinical/base.html' %}
+{% load clinical_tags %}
+{% load static %}
+
+{% block title %}{{ patient.name }} - A2Z Clinic{% endblock %}
+
+{% block extra_css %}
+<style>
+    .nav-tabs .nav-link {
+        color: #495057;
+    }
+    .nav-tabs .nav-link.active {
+        color: #1f4287;
+        font-weight: bold;
+    }
+    .tab-content {
+        padding: 15px 0;
+    }
+    .info-label {
+        font-weight: 600;
+        color: #495057;
+    }
+    .info-value {
+        color: #212529;
+    }
+    .info-group {
+        margin-bottom: 0.75rem;
+    }
+    .section-heading {
+        border-bottom: 1px solid #e3e6f0;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'clinical:dashboard' %}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'clinical:patient_list' %}">Patients</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ patient.name }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-lg-4">
+        <!-- Patient Information Card -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Patient Information</h6>
+                <div>
+                    <a href="{% url 'clinical:patient_edit' pk=patient.pk %}" class="btn btn-sm btn-warning">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <a href="{% url 'clinical:patient_delete' pk=patient.pk %}" class="btn btn-sm btn-danger ms-1">
+                        <i class="fas fa-trash"></i> Delete
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h5 class="font-weight-bold">{{ patient.name }}</h5>
+                    <p class="mb-0">
+                        <span class="badge bg-primary">{{ patient.get_gender_display }}</span>
+                        <span class="badge bg-secondary">{{ patient.age }} years</span>
+                        {% if patient.blood_group %}
+                        <span class="badge bg-danger">{{ patient.blood_group }}</span>
+                        {% endif %}
+                        {% if patient.marital_status %}
+                        <span class="badge bg-info">{{ patient.get_marital_status_display }}</span>
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="row info-group">
+                        <div class="col-5 info-label">Mobile:</div>
+                        <div class="col-7">{{ patient.mobile }}</div>
+                    </div>
+                    {% if patient.email %}
+                    <div class="row info-group">
+                        <div class="col-5 info-label">Email:</div>
+                        <div class="col-7">{{ patient.email }}</div>
+                    </div>
+                    {% endif %}
+                    {% if patient.height or patient.weight %}
+                    <div class="row info-group">
+                        <div class="col-5 info-label">Measurements:</div>
+                        <div class="col-7">
+                            {% if patient.height %}{{ patient.height }} cm{% endif %}
+                            {% if patient.height and patient.weight %} / {% endif %}
+                            {% if patient.weight %}{{ patient.weight }} kg{% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    {% if patient.blood_pressure %}
+                    <div class="row info-group">
+                        <div class="col-5 info-label">BP:</div>
+                        <div class="col-7">{{ patient.blood_pressure }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <ul class="nav nav-tabs" id="patientDetailTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link active" id="medical-tab" data-bs-toggle="tab" href="#medical" role="tab" aria-controls="medical" aria-selected="true">
+                            <i class="fas fa-heartbeat"></i> Medical
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="lifestyle-tab" data-bs-toggle="tab" href="#lifestyle" role="tab" aria-controls="lifestyle" aria-selected="false">
+                            <i class="fas fa-running"></i> Lifestyle
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link" id="admin-tab" data-bs-toggle="tab" href="#admin" role="tab" aria-controls="admin" aria-selected="false">
+                            <i class="fas fa-file-alt"></i> Admin
+                        </a>
+                    </li>
+                </ul>
+                
+                <div class="tab-content mt-3" id="patientDetailTabsContent">
+                    <!-- Medical Tab -->
+                    <div class="tab-pane fade show active" id="medical" role="tabpanel" aria-labelledby="medical-tab">
+                        {% if patient.allergies %}
+                        <div class="mb-2">
+                            <div class="info-label">Allergies:</div>
+                            <div>{{ patient.allergies|linebreaks }}</div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if patient.current_medications %}
+                        <div class="mb-2">
+                            <div class="info-label">Current Medications:</div>
+                            <div>{{ patient.current_medications|linebreaks }}</div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if patient.past_medical_history %}
+                        <div class="mb-2">
+                            <div class="info-label">Medical History:</div>
+                            <div>{{ patient.past_medical_history|linebreaks }}</div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if patient.chronic_conditions %}
+                        <div class="mb-2">
+                            <div class="info-label">Chronic Conditions:</div>
+                            <div>{{ patient.chronic_conditions|linebreaks }}</div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if not patient.allergies and not patient.current_medications and not patient.past_medical_history and not patient.chronic_conditions %}
+                        <p class="text-center text-muted">No medical history recorded</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Lifestyle Tab -->
+                    <div class="tab-pane fade" id="lifestyle" role="tabpanel" aria-labelledby="lifestyle-tab">
+                        <div class="row mb-3">
+                            {% if patient.occupation %}
+                            <div class="col-md-6">
+                                <div class="info-label">Occupation:</div>
+                                <div>{{ patient.occupation }}</div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if patient.smoking_status %}
+                            <div class="col-md-6">
+                                <div class="info-label">Smoking:</div>
+                                <div>{{ patient.smoking_status }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="row mb-3">
+                            {% if patient.alcohol_consumption %}
+                            <div class="col-md-6">
+                                <div class="info-label">Alcohol:</div>
+                                <div>{{ patient.alcohol_consumption }}</div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if patient.exercise_habits %}
+                            <div class="col-md-6">
+                                <div class="info-label">Exercise:</div>
+                                <div>{{ patient.exercise_habits }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if patient.dietary_restrictions %}
+                        <div class="mb-2">
+                            <div class="info-label">Dietary Restrictions:</div>
+                            <div>{{ patient.dietary_restrictions|linebreaks }}</div>
+                        </div>
+                        {% endif %}
+                        
+                        {% if not patient.occupation and not patient.smoking_status and not patient.alcohol_consumption and not patient.exercise_habits and not patient.dietary_restrictions %}
+                        <p class="text-center text-muted">No lifestyle information recorded</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Administrative Tab -->
+                    <div class="tab-pane fade" id="admin" role="tabpanel" aria-labelledby="admin-tab">
+                        <div class="row mb-3">
+                            {% if patient.insurance_provider %}
+                            <div class="col-md-6">
+                                <div class="info-label">Insurance:</div>
+                                <div>{{ patient.insurance_provider }}</div>
+                                {% if patient.insurance_policy_number %}
+                                <div class="small text-muted">Policy: {{ patient.insurance_policy_number }}</div>
+                                {% endif %}
+                            </div>
+                            {% endif %}
+                            
+                            {% if patient.preferred_pharmacy %}
+                            <div class="col-md-6">
+                                <div class="info-label">Preferred Pharmacy:</div>
+                                <div>{{ patient.preferred_pharmacy }}</div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if patient.has_advance_directive %}
+                        <div class="alert alert-info py-2 mb-0">
+                            <div class="info-label">Advanced Directive on File</div>
+                            {% if patient.advance_directive_details %}
+                            <div class="small">{{ patient.advance_directive_details|linebreaks }}</div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if not patient.insurance_provider and not patient.preferred_pharmacy and not patient.has_advance_directive %}
+                        <p class="text-center text-muted">No administrative information recorded</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="small text-muted mt-3">
+                    <p class="mb-0">Added on: {{ patient.created_at|date:"M d, Y" }}</p>
+                    <p class="mb-0">Last updated: {{ patient.updated_at|date:"M d, Y" }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical Documents Card -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Medical Documents</h6>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addDocumentModal">
+                    <i class="fas fa-file-upload"></i> Upload
+                </button>
+            </div>
+            <div class="card-body">
+                {% if documents %}
+                <div class="list-group">
+                    {% for document in documents %}
+                    <a href="{% static 'images/medical_documents/' %}{{ document.file.name|split:'/'|last }}" class="list-group-item list-group-item-action" target="_blank">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ document.title }}</h6>
+                            <div>
+                                <small>{{ document.uploaded_at|date:"M d, Y" }}</small>
+                                <a href="{% url 'clinical:document_delete' pk=document.id %}" class="btn btn-sm btn-danger ms-2">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {% if document.description %}
+                        <p class="mb-1 small">{{ document.description|truncatechars:100 }}</p>
+                        {% endif %}
+                        <small class="text-muted">
+                            <i class="fas fa-file"></i> {{ document.file.name|split:"/"|last }}
+                        </small>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-center">No documents uploaded yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-8">
+        <!-- Patient Visits Card -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Patient Visits</h6>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addVisitModal">
+                    <i class="fas fa-plus"></i> New Visit
+                </button>
+            </div>
+            <div class="card-body">
+                {% if visits %}
+                <div class="accordion" id="visitsAccordion">
+                    {% for visit in visits %}
+                    <div class="accordion-item mb-3 border">
+                        <h2 class="accordion-header" id="heading{{ visit.id }}">
+                            <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ visit.id }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}" aria-controls="collapse{{ visit.id }}">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <span><strong>{{ visit.visit_date|date:"F d, Y" }}</strong></span>
+                                </div>
+                            </button>
+                        </h2>
+                        <div id="collapse{{ visit.id }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" aria-labelledby="heading{{ visit.id }}" data-bs-parent="#visitsAccordion">
+                            <div class="accordion-body">
+                                <div class="mb-3">
+                                    <h6 class="font-weight-bold">Symptoms</h6>
+                                    <p>{{ visit.symptoms|linebreaks }}</p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h6 class="font-weight-bold">Diagnosis</h6>
+                                    <p>{{ visit.diagnosis|linebreaks }}</p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h6 class="font-weight-bold">Prescribed Medicines</h6>
+                                    <p>{{ visit.prescribed_medicines|linebreaks }}</p>
+                                </div>
+                                
+                                {% if visit.notes %}
+                                <div class="mb-3">
+                                    <h6 class="font-weight-bold">Additional Notes</h6>
+                                    <p>{{ visit.notes|linebreaks }}</p>
+                                </div>
+                                {% endif %}
+                                
+                                {% if visit.documents.all %}
+                                <div class="mb-3">
+                                    <h6 class="font-weight-bold">Documents for this Visit</h6>
+                                    <div class="list-group">
+                                        {% for doc in visit.documents.all %}
+                                        <a href="{% static 'images/medical_documents/' %}{{ doc.file.name|split:'/'|last }}" class="list-group-item list-group-item-action" target="_blank">
+                                            {{ doc.title }}
+                                        </a>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                <div class="small text-muted text-end">
+                                    Created: {{ visit.created_at|date:"M d, Y" }}
+                                    <a href="{% url 'clinical:visit_delete' pk=visit.id %}" class="btn btn-sm btn-danger ms-2">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-center">No visits recorded yet. Click "New Visit" to add a visit record.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Visit Modal -->
+<div class="modal fade" id="addVisitModal" tabindex="-1" aria-labelledby="addVisitModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="visit_form" value="1">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addVisitModalLabel">Add New Visit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="{{ visit_form.visit_date.id_for_label }}" class="form-label">Visit Date</label>
+                        {{ visit_form.visit_date }}
+                        {% if visit_form.visit_date.errors %}
+                        <div class="text-danger small">{{ visit_form.visit_date.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ visit_form.symptoms.id_for_label }}" class="form-label">Symptoms</label>
+                        {{ visit_form.symptoms }}
+                        {% if visit_form.symptoms.errors %}
+                        <div class="text-danger small">{{ visit_form.symptoms.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ visit_form.diagnosis.id_for_label }}" class="form-label">Diagnosis</label>
+                        {{ visit_form.diagnosis }}
+                        {% if visit_form.diagnosis.errors %}
+                        <div class="text-danger small">{{ visit_form.diagnosis.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ visit_form.prescribed_medicines.id_for_label }}" class="form-label">Prescribed Medicines</label>
+                        {{ visit_form.prescribed_medicines }}
+                        {% if visit_form.prescribed_medicines.errors %}
+                        <div class="text-danger small">{{ visit_form.prescribed_medicines.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ visit_form.notes.id_for_label }}" class="form-label">Additional Notes (Optional)</label>
+                        {{ visit_form.notes }}
+                        {% if visit_form.notes.errors %}
+                        <div class="text-danger small">{{ visit_form.notes.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Visit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Add Document Modal -->
+<div class="modal fade" id="addDocumentModal" tabindex="-1" aria-labelledby="addDocumentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input type="hidden" name="document_form" value="1">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addDocumentModalLabel">Upload Document</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="{{ document_form.title.id_for_label }}" class="form-label">Document Title</label>
+                        {{ document_form.title }}
+                        {% if document_form.title.errors %}
+                        <div class="text-danger small">{{ document_form.title.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ document_form.file.id_for_label }}" class="form-label">File</label>
+                        {{ document_form.file }}
+                        {% if document_form.file.errors %}
+                        <div class="text-danger small">{{ document_form.file.errors }}</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ document_form.description.id_for_label }}" class="form-label">Description (Optional)</label>
+                        {{ document_form.description }}
+                        {% if document_form.description.errors %}
+                        <div class="text-danger small">{{ document_form.description.errors }}</div>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Upload Document</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Initialize all date/time pickers
+    document.addEventListener('DOMContentLoaded', function() {
+        // Logic to handle any special initializations
+    });
+</script>
+{% endblock %} 
